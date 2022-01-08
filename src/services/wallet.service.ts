@@ -27,7 +27,10 @@ export class WalletService implements IWalletService {
       throw new BadRequestError(`Já existe uma wallet com cpf = ${cpf}`);
     }
 
-    return await this.walletRepository.save(wallet);
+    const entity = await this.walletRepository.save(wallet);
+    delete entity.deletedAt;
+
+    return entity;
   }
 
   @Catch()
@@ -42,21 +45,34 @@ export class WalletService implements IWalletService {
   }
 
   @Catch()
-  public async find (args: Partial<IWalletDTO>): Promise<Wallet[]> {
+  public async find (args: Partial<IWalletDTO>, returnId: boolean = false): Promise<Wallet[]> {
     const wallet = clearObject<Wallet>({ ...args });
 
     const wallets = await this.walletRepository.find({
       where: {
-        ...wallet
+        ...wallet,
+        deletedAt: null
       }
     });
 
     wallets.forEach(wallet => {
-      wallet.coins.forEach(coin => {
-        delete coin.id;
-      });
+      delete wallet.deletedAt;
+
+      if (!returnId) {
+        wallet.coins.forEach(coin => {
+          delete coin.id;
+        });
+      }
     });
 
     return wallets;
+  }
+
+  @Catch()
+  public async delete (address: string): Promise<Wallet> {
+    const wallet = await this.findByAdress(address);
+    wallet.deletedAt = new Date();
+
+    return await this.walletRepository.save(wallet);
   }
 }

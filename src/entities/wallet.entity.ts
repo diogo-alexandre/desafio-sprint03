@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { IsNotEmpty, Length, Matches } from 'class-validator';
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { IsCPF } from '../helpers/decorators/validators/iscpf.decorator';
 import { PastYears } from '../helpers/decorators/validators/pastyears.decorator';
@@ -35,6 +35,9 @@ export class Wallet {
 
   @UpdateDateColumn()
   public readonly updatedAt?: Date
+
+  @DeleteDateColumn()
+  public deletedAt?: Date
 
   constructor (name: string, cpf: string, birthdate: Date) {
     this.name = name;

@@ -28,6 +28,7 @@ export class WalletRoutes {
 
     router.post(this.prefix, (req, res, next) => walletController.create(req, res, next));
     router.get(this.prefix, (req, res, next) => walletController.index(req, res, next));
-    router.get(`${this.prefix}/:adress`, (req, res, next) => walletController.findOne(req, res, next));
+    router.get(`${this.prefix}/:address`, (req, res, next) => walletController.findOne(req, res, next));
+    router.delete(`${this.prefix}/:address`, (req, res, next) => walletController.delete(req, res, next));
   }
 }

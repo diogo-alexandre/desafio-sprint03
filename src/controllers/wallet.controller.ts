@@ -51,13 +51,36 @@ export class WalletController {
 
   @HttpErrorHandler()
   public async findOne (req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { adress } = req.params;
-
-    const wallet = await this.walletService.findByAdress(adress);
+    const { address } = req.params;
+    const wallet = await this.walletService.findByAdress(address);
 
     res.status(200).json({
       ...wallet,
       birthdate: wallet.getBirthdate()
     });
+  }
+
+  /*
+  @HttpErrorHandler()
+  public async transaction (req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { address } = req.params;
+    const transactions: ITransaction[] = req.body;
+
+    const wallet = await this.walletService.findByAdress(address);
+
+    transactions.forEach(transaction => {
+      if (transaction.value > 0) {
+        wallet.deposit()
+      }
+    });
+  }
+  */
+
+  @HttpErrorHandler()
+  public async delete (req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { address } = req.params;
+    await this.walletService.delete(address);
+
+    res.status(201).end();
   }
 }
