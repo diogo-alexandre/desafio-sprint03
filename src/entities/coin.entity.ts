@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Wallet } from './wallet.entity';
+import { Transaction } from './transaction.entity';
 
 @Entity('coins')
 export class Coin {
@@ -18,6 +19,9 @@ export class Coin {
 
   @Column({ type: 'double' })
   public amont: number
+
+  @OneToMany(() => Transaction, transaction => transaction.coin, { eager: true })
+  public readonly transactions!: Transaction[]
 
   constructor (coin: string, fullname: string, amont: number) {
     this.coin = coin;
