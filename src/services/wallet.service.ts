@@ -5,8 +5,9 @@ import { IWalletDTO } from '../entities/DTO/wallet.dto';
 import { IWalletService } from './interfaces/wallet-service.interface';
 import { validate } from '../helpers/validate.helper';
 import { Catch } from '../helpers/decorators/catch.decorator';
-import { NotFound } from '../errors/http/not-found-error';
-import { BadRequest } from '../errors/http/bad-request.error';
+import { NotFoundError } from '../errors/http/not-found-error';
+import { BadRequestError } from '../errors/http/bad-request.error';
+import { clearObject } from '../helpers/clear-object.helper';
 
 export class WalletService implements IWalletService {
   private readonly walletRepository: Repository<Wallet>
@@ -20,8 +21,10 @@ export class WalletService implements IWalletService {
     const wallet = new Wallet(name, cpf, birthdate);
     await validate(wallet);
 
-    if (this.findByCPF(wallet.cpf) !== undefined) {
-      throw new BadRequest(`Já existe uma wallet com cpf = ${cpf}`);
+    const [walletExist] = await this.find({ cpf: wallet.cpf });
+
+    if (walletExist !== undefined) {
+      throw new BadRequestError(`Já existe uma wallet com cpf = ${cpf}`);
     }
 
     return await this.walletRepository.save(wallet);
@@ -29,23 +32,24 @@ export class WalletService implements IWalletService {
 
   @Catch()
   public async findByAdress (address: string): Promise<Wallet> {
-    const wallet = await this.walletRepository.findOne({ address });
+    const [wallet] = await this.find({ address });
 
     if (wallet === undefined) {
-      throw new NotFound(`Não foi possível encontrar wallet com adress = ${address}`);
+      throw new NotFoundError(`Não foi possível encontrar wallet com adress = ${address}`);
     }
 
     return wallet;
   }
 
   @Catch()
-  public async findByCPF (cpf: string): Promise<Wallet> {
-    const wallet = await this.walletRepository.findOne({ cpf });
+  public async find (args: Partial<IWalletDTO>): Promise<Wallet[]> {
+    const wallet = clearObject<Wallet>({ ...args });
 
-    if (wallet === undefined) {
-      throw new NotFound(`Não foi possível encontrar wallet com cpf = ${cpf}`);
-    }
-
-    return wallet!;
+    const wallets = await this.walletRepository.find({
+      where: {
+        ...wallet
+      }
+    });
+    return wallets;
   }
 }

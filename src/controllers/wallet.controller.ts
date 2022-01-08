@@ -4,6 +4,7 @@ import { HttpErrorHandler } from '../helpers/decorators/http-error-handle';
 
 import { HttpParams } from '../helpers/types/http-params.type';
 import { IWalletService } from '../services/interfaces/wallet-service.interface';
+import { IWalletDTO } from '../entities/DTO/wallet.dto';
 
 export class WalletController {
   private readonly walletService: IWalletService
@@ -25,6 +26,26 @@ export class WalletController {
     res.status(201).json({
       ...wallet,
       birthdate: wallet.formatBirthdate()
+    });
+  }
+
+  @HttpErrorHandler()
+  public async index (req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { name, cpf, birthdate, createdAt, updatedAt }: Partial<IWalletDTO> = req.query;
+
+    const wallets = await this.walletService.find({
+      name,
+      cpf,
+      birthdate: (birthdate) ? moment(birthdate, 'DD/MM/YYYY').toDate() : undefined,
+      createdAt: (createdAt) ? new Date(createdAt) : undefined,
+      updatedAt: (updatedAt) ? new Date(updatedAt) : undefined
+    });
+
+    res.status(200).json({
+      wallets: wallets.map(wallet => ({
+        ...wallet,
+        birthdate: wallet.formatBirthdate()
+      }))
     });
   }
 

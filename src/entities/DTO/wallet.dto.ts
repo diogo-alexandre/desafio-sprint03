@@ -1,7 +1,10 @@
 export interface IWalletDTO {
+  address?: string
   name: string
   cpf: string
   birthdate: Date
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export class WalletDTO implements IWalletDTO {

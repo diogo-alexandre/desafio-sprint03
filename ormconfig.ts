@@ -16,6 +16,7 @@ const config: ConnectionOptions & IOrmConfig = {
   database: process.env.DB_DATABASE,
   entities: [path.resolve(__dirname, 'src/entities/**/*.entity.{ts,js}')],
   migrations: [path.resolve(__dirname, 'src/database/migrations/*.{ts,js}')],
+  timezone: 'Z',
   cli: {
     migrationsDir: 'src/database/migrations',
     entitiesDir: 'src/entities'

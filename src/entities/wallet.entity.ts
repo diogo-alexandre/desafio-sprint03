@@ -36,6 +36,9 @@ export class Wallet {
     this.name = name;
     this.cpf = cpf;
     this.birthdate = birthdate;
+
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
   }
 
   public formatBirthdate (): string {

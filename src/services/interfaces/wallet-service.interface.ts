@@ -2,7 +2,7 @@ import { IWalletDTO } from '../../entities/DTO/wallet.dto';
 import { Wallet } from '../../entities/wallet.entity';
 
 export interface IWalletService {
-  findByAdress(adress: string): Promise<Wallet>
-  findByCPF(cpf: string): Promise<Wallet>
+  find (wallet: Partial<IWalletDTO>): Promise<Wallet[]>
+  findByAdress (address: string): Promise<Wallet>
   create(wallet: IWalletDTO): Promise<Wallet>
 }
