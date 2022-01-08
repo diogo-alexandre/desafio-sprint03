@@ -25,7 +25,7 @@ export class WalletController {
 
     res.status(201).json({
       ...wallet,
-      birthdate: wallet.formatBirthdate()
+      birthdate: wallet.getBirthdate()
     });
   }
 
@@ -44,7 +44,7 @@ export class WalletController {
     res.status(200).json({
       wallets: wallets.map(wallet => ({
         ...wallet,
-        birthdate: wallet.formatBirthdate()
+        birthdate: wallet.getBirthdate()
       }))
     });
   }
@@ -57,7 +57,7 @@ export class WalletController {
 
     res.status(200).json({
       ...wallet,
-      birthdate: wallet.formatBirthdate()
+      birthdate: wallet.getBirthdate()
     });
   }
 }

@@ -41,7 +41,7 @@ export class Wallet {
     this.updatedAt = new Date();
   }
 
-  public formatBirthdate (): string {
+  public getBirthdate (): string {
     return moment(this.birthdate).format('DD/MM/YYYY');
   }
 }
