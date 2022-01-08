@@ -1,6 +1,7 @@
-import { WalletDAO } from '../../entities/DAO/wallet.dao';
+import { IWalletDTO } from '../../entities/DTO/wallet.dto';
 import { Wallet } from '../../entities/wallet.entity';
 
 export interface IWalletService {
-  create(wallet: WalletDAO): Promise<Wallet>
+  findByAdress(adress: string): Promise<Wallet>
+  create(wallet: IWalletDTO): Promise<Wallet>
 }

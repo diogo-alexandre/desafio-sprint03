@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { IsNotEmpty, Length, Matches } from 'class-validator';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
@@ -7,7 +8,7 @@ import { PastYears } from '../helpers/decorators/validators/pastyears.decorator'
 @Entity('wallets')
 export class Wallet {
   @PrimaryGeneratedColumn('uuid')
-  public readonly adress?: string
+  public readonly address?: string
 
   @Column({ length: 255 })
   @Length(7)
@@ -35,5 +36,9 @@ export class Wallet {
     this.name = name;
     this.cpf = cpf;
     this.birthdate = birthdate;
+  }
+
+  public formatBirthdate (): string {
+    return moment(this.birthdate).format('DD/MM/YYYY');
   }
 }

@@ -27,5 +27,6 @@ export class WalletRoutes {
     const walletController = new WalletController(walletService);
 
     router.post(this.prefix, (req, res, next) => walletController.create(req, res, next));
+    router.get(`${this.prefix}/:adress`, (req, res, next) => walletController.findOne(req, res, next));
   }
 }

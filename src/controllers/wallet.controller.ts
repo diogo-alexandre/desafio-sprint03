@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from 'express';
 import moment from 'moment';
+import { NextFunction, Request, Response } from 'express';
 import { HttpErrorHandler } from '../helpers/decorators/http-error-handle';
 
 import { HttpParams } from '../helpers/types/http-params.type';
@@ -24,7 +24,19 @@ export class WalletController {
 
     res.status(201).json({
       ...wallet,
-      birthdate: moment(wallet.birthdate).format('DD/MM/YYYY')
+      birthdate: wallet.formatBirthdate()
+    });
+  }
+
+  @HttpErrorHandler()
+  public async findOne (req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { adress } = req.params;
+
+    const wallet = await this.walletService.findByAdress(adress);
+
+    res.status(200).json({
+      ...wallet,
+      birthdate: wallet.formatBirthdate()
     });
   }
 }
