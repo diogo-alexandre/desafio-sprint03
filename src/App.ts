@@ -1,4 +1,5 @@
 import express, { Express } from 'express';
+import { Database } from './database';
 
 export class App {
   private static app: App
@@ -10,6 +11,7 @@ export class App {
 
   public static async init (): Promise<App> {
     if (this.app === undefined) {
+      await Database.init();
       this.app = new App();
     }
 

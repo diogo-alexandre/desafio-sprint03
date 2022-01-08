@@ -1,6 +1,8 @@
 import { App } from './App';
 import { log } from './helpers/log.helper';
 
+import 'dotenv/config';
+
 export class Server {
   public static async init (): Promise<void> {
     const { express: app } = await App.init();
