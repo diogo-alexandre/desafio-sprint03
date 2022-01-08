@@ -50,6 +50,13 @@ export class WalletService implements IWalletService {
         ...wallet
       }
     });
+
+    wallets.forEach(wallet => {
+      wallet.coins.forEach(coin => {
+        delete coin.id;
+      });
+    });
+
     return wallets;
   }
 }

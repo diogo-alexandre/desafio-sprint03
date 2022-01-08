@@ -1,9 +1,10 @@
 import moment from 'moment';
 import { IsNotEmpty, Length, Matches } from 'class-validator';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { IsCPF } from '../helpers/decorators/validators/iscpf.decorator';
 import { PastYears } from '../helpers/decorators/validators/pastyears.decorator';
+import { Coin } from './coin.entity';
 
 @Entity('wallets')
 export class Wallet {
@@ -25,6 +26,9 @@ export class Wallet {
   @PastYears(18)
   @IsNotEmpty()
   public birthdate: Date
+
+  @OneToMany(() => Coin, coin => coin.wallet, { eager: true })
+  public readonly coins!: Coin[]
 
   @CreateDateColumn()
   public readonly createdAt?: Date
