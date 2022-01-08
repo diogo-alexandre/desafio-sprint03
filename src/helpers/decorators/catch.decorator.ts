@@ -1,7 +1,7 @@
 import { InternalServerError } from '../../errors/http/internal-server.error';
 import { BadRequest } from '../../errors/http/bad-request.error';
 import { ValidationError } from '../../errors/validation.error';
-import { NotFound } from '../../errors/http/not-found-error';
+import { HttpError } from '../../errors/http/http.error';
 
 export function Catch () {
   return function (target: any, properyKey: string, descriptor: PropertyDescriptor) {
@@ -12,8 +12,8 @@ export function Catch () {
         return await original.apply(this, args);
       } catch (err: unknown) {
         if (err instanceof ValidationError) {
-          throw new BadRequest(err.errors, 'Erro no cliente. Servidor não entendeu sua requesição ou está inválida.');
-        } else if (err instanceof NotFound) {
+          throw new BadRequest('Erro no cliente. Servidor não entendeu sua requesição ou está inválida.', err.errors);
+        } else if (err instanceof HttpError) {
           throw err;
         }
 
