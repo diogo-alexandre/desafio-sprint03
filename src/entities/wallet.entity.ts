@@ -7,9 +7,9 @@ import { PastYears } from '../helpers/decorators/validators/pastyears.decorator'
 @Entity('wallets')
 export class Wallet {
   @PrimaryGeneratedColumn('uuid')
-  public adress!: string
+  public readonly adress?: string
 
-  @Column()
+  @Column({ length: 255 })
   @Length(7)
   @IsNotEmpty()
   public name: string
@@ -26,10 +26,10 @@ export class Wallet {
   public birthdate: Date
 
   @CreateDateColumn()
-  public createdAt!: Date
+  public readonly createdAt?: Date
 
   @UpdateDateColumn()
-  public updatedAt!: Date
+  public readonly updatedAt?: Date
 
   constructor (name: string, cpf: string, birthdate: Date) {
     this.name = name;
