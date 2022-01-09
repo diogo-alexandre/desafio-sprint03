@@ -1,6 +1,6 @@
 {
   "name": "desafio-sprint03",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Desafio da Compasso UOL. API de carteira de criptomoedas.",
   "main": "index.js",
   "scripts": {
