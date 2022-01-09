@@ -1,10 +1,13 @@
 {
   "name": "desafio-sprint03",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Desafio da Compasso UOL. API de carteira de criptomoedas.",
   "main": "index.js",
   "scripts": {
-    "start:dev": "ts-node-dev src/Server.ts"
+    "build": "tsc",
+    "start": "node dist/src/Server.js",
+    "start:dev": "ts-node-dev --transpile-only src/Server.ts",
+    "typeorm": "ts-node-dev ./node_modules/typeorm/cli.js"
   },
   "keywords": [],
   "author": "Diogo Alexandre <diogo.silva_bols@compasso.com.br>",
@@ -23,6 +26,14 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "express": "^4.17.2"
+    "axios": "^0.24.0",
+    "class-validator": "^0.13.2",
+    "cpf-cnpj-validator": "^1.0.3",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2",
+    "moment": "^2.29.1",
+    "mysql2": "^2.3.3",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.41"
   }
 }
