@@ -2,17 +2,18 @@
 <img src='https://ms-f7-sites-01-cdn.azureedge.net/docs/stories/1429227625033526993-compasso-uol-professional-services-azure-pt-brazil/resources/009137f8-d97d-449c-8b02-1bc1276929fa/1429228339784747101_1429228339784747101' max-width='300px'/>
 </p>
 
+-----
 
 ### Tabela de Conteúdos
 - [Introdução](#Introdução)
 - [Tecnologias](#Tecnologias)
 - [Setup](#Setup)
- - [Requerimentos](#Requerimentos)
- - [Primeiros Passos](#Primeiros Passos)
- - [Configurando](#Configurando)
- - [Migrations](#Migrations)
- - [Modo desenvolvimento](#Modo desenvolvimento)
- - [Build e Produção](#Build e Produção)
+  - [Requerimentos](#Requerimentos)
+  - [Primeiros Passos](#primeiros-passos)
+  - [Configurando](#Configurando)
+  - [Migrations](#Migrations)
+  - [Modo desenvolvimento](#modo-desenvolvimento)
+  - [Build e Produção](#build-e-produção)
 - [Rotas](#Rotas)
 
 ### Introdução
