@@ -4,6 +4,8 @@
   "description": "Desafio da Compasso UOL. API de carteira de criptomoedas.",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/Server.js",
     "start:dev": "ts-node-dev --transpile-only src/Server.ts",
     "typeorm": "ts-node-dev ./node_modules/typeorm/cli.js"
   },

@@ -12,10 +12,21 @@ export class TransactionService implements ITransactionService {
   }
 
   @Catch()
-  public async create ({ value, sendTo, receiveFrom, currentCotation, coin }: Transaction): Promise<Transaction> {
-    const entity = new Transaction(value, sendTo, receiveFrom, currentCotation, coin);
-    await validate(entity);
+  public async create (entity: Transaction | Transaction[]): Promise<Transaction | Transaction[]> {
+    const add = async ({ value, sendTo, receiveFrom, currentCotation, coin }: Transaction) => {
+      const entity = new Transaction(value, sendTo, receiveFrom, currentCotation, coin);
+      await validate(entity);
 
-    return await this.transactionRepository.save(entity);
+      return await this.transactionRepository.save(entity);
+    };
+
+    const results: Transaction[] = [];
+
+    if (Array.isArray(entity)) {
+      entity.forEach(async e => results.push(await add(e)));
+      return results;
+    } else {
+      return await add(entity);
+    }
   }
 }

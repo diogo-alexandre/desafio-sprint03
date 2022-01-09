@@ -111,11 +111,15 @@ export class WalletService implements IWalletService {
         throw new InsufficientFunds(dto.currentCoin);
       }
 
-      let transaction = new Transaction(dto.value, wallet.address!, wallet.address!);
-      transaction.currentCotation = Number(response.bid);
-      transaction.coin = coin!;
+      const transaction = new Transaction(
+        dto.value,
+        wallet.address!,
+        wallet.address!,
+        Number(response.bid),
+        coin
+      );
 
-      transaction = await this.transactionService.create(transaction);
+      await this.transactionService.create(transaction);
 
       coin!.amont += dto.value;
 
@@ -125,7 +129,62 @@ export class WalletService implements IWalletService {
 
   @Catch()
   public async transfer (dto: ITransferType): Promise<void> {
+    const transactionDTO = new TransactionDTO(
+      dto.transaction.quoteTo,
+      dto.transaction.currentCoin,
+      dto.transaction.value
+    );
 
+    await validate(transactionDTO);
+
+    const response = await ApiEconomia.get(transactionDTO.currentCoin, transactionDTO.quoteTo);
+
+    const [from] = await this.find({ address: dto.from }, true);
+    let [to] = await this.find({ address: dto.to }, true);
+
+    const fromCoin = from.coins.find(c => c.coin === transactionDTO.quoteTo);
+
+    if (!fromCoin || fromCoin.amont < transactionDTO.value) {
+      throw new InsufficientFunds(transactionDTO.quoteTo);
+    }
+
+    let toCoin = to.coins.find(c => c.coin === transactionDTO.quoteTo);
+
+    if (toCoin === undefined) {
+      const coin = new Coin(
+        transactionDTO.quoteTo,
+        response.name.split('/')[1],
+        transactionDTO.value,
+        to
+      );
+
+      toCoin = await this.coinService.create(coin);
+      to = (await this.find({ address: to.address }, true))[0];
+    }
+
+    fromCoin.amont -= transactionDTO.value;
+    toCoin.amont += transactionDTO.value;
+
+    await this.walletRepository.save([from, to]);
+
+    const t1 = new Transaction(
+      transactionDTO.value * -1,
+      from.address!,
+      to.address!,
+      Number(response.bid),
+      fromCoin
+    );
+
+    const t2 = new Transaction(
+      transactionDTO.value,
+      from.address!,
+      to.address!,
+      Number(response.bid),
+      toCoin
+    );
+
+    await this.transactionService.create(t1);
+    await this.transactionService.create(t2);
   }
 
   @Catch()
@@ -152,6 +211,11 @@ export class WalletService implements IWalletService {
       });
     }
 
-    return coins;
+    return coins.map(c => {
+      return {
+        coin: c.coin,
+        transactions: c.transactions
+      };
+    });
   }
 }
