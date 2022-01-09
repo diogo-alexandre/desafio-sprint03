@@ -6,6 +6,7 @@ import { HttpParams } from '../helpers/types/http-params.type';
 import { IWalletService } from '../services/interfaces/wallet-service.interface';
 import { IWalletDTO } from '../entities/DTO/wallet.dto';
 import { ITransaction, TransactionDTO } from '../entities/DTO/transaction.dto';
+import { ITransferDTO } from '../entities/DTO/transfer.dto';
 
 export class WalletController {
   private readonly walletService: IWalletService
@@ -81,5 +82,38 @@ export class WalletController {
     await this.walletService.delete(address);
 
     res.status(201).end();
+  }
+
+  @HttpErrorHandler()
+  public async transfer (req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { address } = req.params;
+    const { receiverAddress, quoteTo, currentCoin, value }: ITransferDTO = req.body;
+
+    await this.walletService.transfer({
+      from: address,
+      to: receiverAddress,
+      transaction: {
+        quoteTo,
+        currentCoin,
+        value: Number(value)
+      }
+    });
+
+    res.status(201).end();
+  }
+
+  @HttpErrorHandler()
+  public async findTransactions (req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { address } = req.params;
+    const { coin, initialDate, finalDate }: { [key: string]: string } = req.query as any;
+
+    const transactions = await this.walletService.findTransactions({
+      address,
+      coin,
+      inititalDate: (initialDate) ? moment(initialDate, 'DD/MM/YYYY').toDate() : undefined,
+      finalDate: (finalDate) ? moment(finalDate, 'DD/MM/YYYY').toDate() : undefined
+    });
+
+    res.status(200).json(transactions);
   }
 }

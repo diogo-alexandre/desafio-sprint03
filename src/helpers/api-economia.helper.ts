@@ -17,12 +17,7 @@ type ApiEconomiaData = {
 export class ApiEconomia {
   public static async get (currentCoin: string, quoteTo : string): Promise<ApiEconomiaData> {
     const url = `https://economia.awesomeapi.com.br/json/last/${currentCoin}-${quoteTo}`;
-    try {
-      const response: any = (await axios(url)).data;
-      return response[`${currentCoin.toUpperCase()}${quoteTo.toUpperCase()}`];
-    } catch (err) {
-      console.log(url);
-      throw err;
-    }
+    const response: any = (await axios(url)).data;
+    return response[`${currentCoin.toUpperCase()}${quoteTo.toUpperCase()}`];
   }
 }

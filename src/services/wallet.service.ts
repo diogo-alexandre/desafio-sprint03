@@ -2,18 +2,19 @@ import { Repository } from 'typeorm';
 
 import { Wallet } from '../entities/wallet.entity';
 import { IWalletDTO } from '../entities/DTO/wallet.dto';
-import { IWalletService } from './interfaces/wallet-service.interface';
+import { ITransferType, IWalletService } from './interfaces/wallet-service.interface';
 import { validate } from '../helpers/validate.helper';
 import { Catch } from '../helpers/decorators/catch.decorator';
 import { NotFoundError } from '../errors/http/not-found-error';
 import { BadRequestError } from '../errors/http/bad-request.error';
 import { clearObject } from '../helpers/clear-object.helper';
 import { Transaction } from '../entities/transaction.entity';
-import { ITransaction, TransactionDTO } from '../entities/DTO/transaction.dto';
+import { IFindTransaction, ITransaction, TransactionDTO } from '../entities/DTO/transaction.dto';
 import { Coin } from '../entities/coin.entity';
 import { ApiEconomia } from '../helpers/api-economia.helper';
 import { ICoinService } from './interfaces/coin-service.interface';
 import { ITransactionService } from './interfaces/transaction-service.interface';
+import { InsufficientFunds } from '../errors/insufficient-founds.error';
 
 export class WalletService implements IWalletService {
   constructor (
@@ -107,7 +108,7 @@ export class WalletService implements IWalletService {
       }
 
       if (dto.value < 0 && coin!.amont <= dto.value * -1) {
-        throw new BadRequestError(`Não possuí valor suficiente na moeda ${dto.currentCoin}`);
+        throw new InsufficientFunds(dto.currentCoin);
       }
 
       let transaction = new Transaction(dto.value, wallet.address!, wallet.address!);
@@ -117,9 +118,40 @@ export class WalletService implements IWalletService {
       transaction = await this.transactionService.create(transaction);
 
       coin!.amont += dto.value;
-      coin!.transactions.push(transaction);
 
       await this.coinService.update(coin!);
     }
+  }
+
+  @Catch()
+  public async transfer (dto: ITransferType): Promise<void> {
+
+  }
+
+  @Catch()
+  public async findTransactions (args: IFindTransaction): Promise<any> {
+    const [wallet] = await this.find({
+      address: args.address
+    });
+
+    let coins = wallet.coins;
+
+    if (args.coin) {
+      coins = coins.filter(c => c.coin === args.coin);
+    }
+
+    if (args.finalDate) {
+      coins.forEach(c => {
+        c.transactions = c.transactions.filter(t => t.datetime < args.finalDate!);
+      });
+    }
+
+    if (args.inititalDate) {
+      coins.forEach(c => {
+        c.transactions = c.transactions.filter(t => t.datetime > args.inititalDate!);
+      });
+    }
+
+    return coins;
   }
 }

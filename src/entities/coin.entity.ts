@@ -12,7 +12,7 @@ export class Coin implements ICoinDTO {
   @ManyToOne(() => Wallet, wallet => wallet.coins)
   public wallet?: Wallet
 
-  @Column({ length: 3, type: 'char', unique: true })
+  @Column({ length: 3, type: 'char' })
   public coin: string
 
   @Column()

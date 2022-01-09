@@ -8,6 +8,13 @@ export interface ITransaction {
   value: number
 }
 
+export interface IFindTransaction {
+  address: string
+  coin: string
+  inititalDate?: Date
+  finalDate?: Date
+}
+
 export interface ITransactionDTO {
   id?: number
   value: number
@@ -18,7 +25,7 @@ export interface ITransactionDTO {
   datetime?: Date
 }
 
-export class TransactionDTO implements ITransaction {
+export class TransactionDTO {
   @IsNotEmpty({ message: 'Propriedade "quoteTo" é obrigatória.' })
   @IsString()
   public quoteTo!: string;
