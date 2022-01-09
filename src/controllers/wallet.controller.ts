@@ -33,11 +33,12 @@ export class WalletController {
 
   @HttpErrorHandler()
   public async index (req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { name, cpf, birthdate, createdAt, updatedAt }: Partial<IWalletDTO> = req.query;
+    const { name, cpf, birthdate, amont, createdAt, updatedAt }: Partial<IWalletDTO> = req.query;
 
     const wallets = await this.walletService.find({
       name,
       cpf,
+      amont,
       birthdate: (birthdate) ? moment(birthdate, 'DD/MM/YYYY').toDate() : undefined,
       createdAt: (createdAt) ? new Date(createdAt) : undefined,
       updatedAt: (updatedAt) ? new Date(updatedAt) : undefined

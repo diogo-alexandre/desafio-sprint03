@@ -4,7 +4,8 @@ export interface IWalletDTO {
   cpf: string
   birthdate: Date
   createdAt?: Date
-  updatedAt?: Date
+  updatedAt?: Date,
+  amont?: string
 }
 
 export class WalletDTO implements IWalletDTO {

@@ -28,7 +28,7 @@ export class Wallet {
   public birthdate: Date
 
   @OneToMany(() => Coin, coin => coin.wallet, { eager: true, cascade: true })
-  public readonly coins!: Coin[]
+  public coins!: Coin[]
 
   @CreateDateColumn()
   public readonly createdAt?: Date

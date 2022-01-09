@@ -52,7 +52,7 @@ export class WalletService implements IWalletService {
   }
 
   @Catch()
-  public async find (args: Partial<IWalletDTO>, returnId: boolean = false): Promise<Wallet[]> {
+  public async find ({ amont, ...args }: Partial<IWalletDTO>, returnId: boolean = false): Promise<Wallet[]> {
     const wallet = clearObject<Wallet>({ ...args });
 
     const wallets = await this.walletRepository.find({
@@ -65,8 +65,13 @@ export class WalletService implements IWalletService {
     wallets.forEach(wallet => {
       delete wallet.deletedAt;
 
+      if (amont) {
+        wallet.coins = wallet.coins.filter(c => c.amont === Number(amont));
+      }
+
       wallet.coins.forEach(coin => {
         if (!returnId) delete coin.id;
+
         coin.transactions.forEach(transaction => {
           if (!returnId) delete transaction.id;
         });
