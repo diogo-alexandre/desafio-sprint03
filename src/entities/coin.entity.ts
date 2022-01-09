@@ -2,14 +2,15 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'ty
 
 import { Wallet } from './wallet.entity';
 import { Transaction } from './transaction.entity';
+import { ICoinDTO } from './DTO/coin.dto';
 
 @Entity('coins')
-export class Coin {
+export class Coin implements ICoinDTO {
   @PrimaryGeneratedColumn('increment')
   public id?: string
 
   @ManyToOne(() => Wallet, wallet => wallet.coins)
-  public readonly wallet!: Wallet
+  public wallet?: Wallet
 
   @Column({ length: 3, type: 'char', unique: true })
   public coin: string
@@ -20,12 +21,13 @@ export class Coin {
   @Column({ type: 'double' })
   public amont: number
 
-  @OneToMany(() => Transaction, transaction => transaction.coin, { eager: true })
-  public readonly transactions!: Transaction[]
+  @OneToMany(() => Transaction, transaction => transaction.coin, { eager: true, cascade: true })
+  public transactions!: Transaction[]
 
-  constructor (coin: string, fullname: string, amont: number) {
+  constructor (coin: string, fullname: string, amont: number, wallet?: Wallet) {
     this.coin = coin;
     this.fullname = fullname;
     this.amont = amont;
+    this.wallet = wallet;
   }
 }

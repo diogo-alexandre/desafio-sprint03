@@ -27,7 +27,7 @@ export class Wallet {
   @IsNotEmpty()
   public birthdate: Date
 
-  @OneToMany(() => Coin, coin => coin.wallet, { eager: true })
+  @OneToMany(() => Coin, coin => coin.wallet, { eager: true, cascade: true })
   public readonly coins!: Coin[]
 
   @CreateDateColumn()

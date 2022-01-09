@@ -5,6 +5,7 @@ import { HttpErrorHandler } from '../helpers/decorators/http-error-handle';
 import { HttpParams } from '../helpers/types/http-params.type';
 import { IWalletService } from '../services/interfaces/wallet-service.interface';
 import { IWalletDTO } from '../entities/DTO/wallet.dto';
+import { ITransaction, TransactionDTO } from '../entities/DTO/transaction.dto';
 
 export class WalletController {
   private readonly walletService: IWalletService
@@ -60,21 +61,19 @@ export class WalletController {
     });
   }
 
-  /*
   @HttpErrorHandler()
   public async transaction (req: Request, res: Response, next: NextFunction): Promise<void> {
     const { address } = req.params;
-    const transactions: ITransaction[] = req.body;
+    const body: Partial<ITransaction>[] = req.body;
 
-    const wallet = await this.walletService.findByAdress(address);
+    await this.walletService.saveTransaction(address, [
+      ...body.map(t => {
+        return new TransactionDTO(t.quoteTo!, t.currentCoin!, t.value!);
+      })
+    ]);
 
-    transactions.forEach(transaction => {
-      if (transaction.value > 0) {
-        wallet.deposit()
-      }
-    });
+    res.status(204).end();
   }
-  */
 
   @HttpErrorHandler()
   public async delete (req: Request, res: Response, next: NextFunction): Promise<void> {

@@ -35,6 +35,7 @@ export class App {
 
   private erroHandler (): void {
     this.express.use((err: HttpError, req: Request, res: Response, next: NextFunction): void => {
+      console.log(err);
       res.status(err.statusCode || 500).json({
         statusCode: err.statusCode || 500,
         moment: err.moment,

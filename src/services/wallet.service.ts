@@ -8,13 +8,19 @@ import { Catch } from '../helpers/decorators/catch.decorator';
 import { NotFoundError } from '../errors/http/not-found-error';
 import { BadRequestError } from '../errors/http/bad-request.error';
 import { clearObject } from '../helpers/clear-object.helper';
+import { Transaction } from '../entities/transaction.entity';
+import { ITransaction, TransactionDTO } from '../entities/DTO/transaction.dto';
+import { Coin } from '../entities/coin.entity';
+import { ApiEconomia } from '../helpers/api-economia.helper';
+import { ICoinService } from './interfaces/coin-service.interface';
+import { ITransactionService } from './interfaces/transaction-service.interface';
 
 export class WalletService implements IWalletService {
-  private readonly walletRepository: Repository<Wallet>
-
-  constructor (walletRepository: Repository<Wallet>) {
-    this.walletRepository = walletRepository;
-  }
+  constructor (
+    private readonly walletRepository: Repository<Wallet>,
+    private readonly coinService: ICoinService,
+    private readonly transactionService: ITransactionService
+  ) { }
 
   @Catch()
   public async create ({ name, cpf, birthdate }: IWalletDTO): Promise<Wallet> {
@@ -34,8 +40,8 @@ export class WalletService implements IWalletService {
   }
 
   @Catch()
-  public async findByAdress (address: string): Promise<Wallet> {
-    const [wallet] = await this.find({ address });
+  public async findByAdress (address: string, returnId: boolean = false): Promise<Wallet> {
+    const [wallet] = await this.find({ address }, returnId);
 
     if (wallet === undefined) {
       throw new NotFoundError(`Não foi possível encontrar wallet com adress = ${address}`);
@@ -58,11 +64,12 @@ export class WalletService implements IWalletService {
     wallets.forEach(wallet => {
       delete wallet.deletedAt;
 
-      if (!returnId) {
-        wallet.coins.forEach(coin => {
-          delete coin.id;
+      wallet.coins.forEach(coin => {
+        if (!returnId) delete coin.id;
+        coin.transactions.forEach(transaction => {
+          if (!returnId) delete transaction.id;
         });
-      }
+      });
     });
 
     return wallets;
@@ -74,5 +81,45 @@ export class WalletService implements IWalletService {
     wallet.deletedAt = new Date();
 
     return await this.walletRepository.save(wallet);
+  }
+
+  @Catch()
+  public async saveTransaction (walletAdress: string, transactions: ITransaction[]): Promise<void> {
+    const wallet = await this.findByAdress(walletAdress, true);
+    const coins = wallet.coins;
+
+    for (let i = 0; i < transactions.length; i++) {
+      const { quoteTo, currentCoin, value } = transactions[i];
+      const dto = new TransactionDTO(quoteTo, currentCoin, value);
+
+      await validate(dto);
+
+      const response = await ApiEconomia.get(dto.currentCoin, dto.quoteTo);
+      let coin = coins.find(c => c.coin === dto.currentCoin);
+
+      if (!coin && dto.value > 0) {
+        coin = new Coin(dto.currentCoin, response.name.split('/')[0], 0);
+        coin.wallet = wallet;
+
+        coin = await this.coinService.create(coin);
+
+        coins.push(coin);
+      }
+
+      if (dto.value < 0 && coin!.amont <= dto.value * -1) {
+        throw new BadRequestError(`Não possuí valor suficiente na moeda ${dto.currentCoin}`);
+      }
+
+      let transaction = new Transaction(dto.value, wallet.address!, wallet.address!);
+      transaction.currentCotation = Number(response.bid);
+      transaction.coin = coin!;
+
+      transaction = await this.transactionService.create(transaction);
+
+      coin!.amont += dto.value;
+      coin!.transactions.push(transaction);
+
+      await this.coinService.update(coin!);
+    }
   }
 }

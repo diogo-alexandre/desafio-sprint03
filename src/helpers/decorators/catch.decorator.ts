@@ -11,6 +11,8 @@ export function Catch () {
       try {
         return await original.apply(this, args);
       } catch (err: unknown) {
+        console.log(err);
+
         if (err instanceof ValidationError) {
           throw new BadRequestError('Erro no cliente. Servidor não entendeu sua requesição ou está inválida.', err.errors);
         } else if (err instanceof HttpError) {
